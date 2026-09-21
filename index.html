@@ -2,17 +2,54 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>我的动画作品集</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的动画小站</title>
 <style>
-body{background:#000;color:#fff;font-size:22px;text-align:center;margin-top:100px;}
-a{color:#ff77bb;margin:20px;text-decoration:none;}
+*{
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+}
+body{
+    min-height:100vh;
+    background:#080812;
+    font-family:system-ui;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+.box{
+    text-align:center;
+}
+h1{
+    color:#ffffff;
+    margin-bottom:40px;
+    font-weight:500;
+}
+a{
+    display:block;
+    text-decoration:none;
+    color:#fff;
+    background:#1b1b33;
+    margin:16px auto;
+    width:280px;
+    padding:16px;
+    border-radius:12px;
+    font-size:17px;
+    transition: 0.25s;
+}
+a:hover{
+    background:#303060;
+    transform:scale(1.04);
+}
 </style>
 </head>
 <body>
-<h1>我的Canvas动画作品集</h1>
-<br>
-<a href="butterfly.html">🦋动态蝴蝶</a>
-<a href="rose.html">🌹水晶玫瑰</a>
-<a href="heart.html">❤️爱心数字雨</a>
+<div class="box">
+    <h1>✨动画特效小站</h1>
+    <a href="butterfly.html">🦋 动态蝴蝶</a>
+    <a href="heart.html">❤️ 爱心数字雨</a>
+    <a href="firework.html">🎆 烟花绽放</a>
+</div>
 </body>
 </html>
