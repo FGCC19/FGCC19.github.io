@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>动态蝴蝶</title>
+    <style>
+        body {
+            margin:0;
+            background:#000;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+        }
+        canvas {
+            border: 1px solid #222;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas" width="800" height="800"></canvas>
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const W = canvas.width / 2;
+const H = canvas.height / 2;
+
+let angle_offset = 0;
+
+function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    let points = [];
+    let t = 0;
+    while(t <= 24 * Math.PI){
+        const exp_cos_t = Math.exp(Math.cos(t));
+        const cos4t = Math.cos(4 * t);
+        const sin_term = Math.sin((2*t - Math.PI)/24) **5;
+        const core = exp_cos_t - 2 * cos4t - sin_term;
+
+        const x = Math.sin(t + angle_offset) * core;
+        const y = Math.cos(t + angle_offset) * core;
+        const scale = 120 + 10 * Math.sin(angle_offset);
+        points.push({
+            x: W + x * scale,
+            y: H - y * scale,
+            t: t
+        })
+        t += 0.05;
+    }
+    // 画线+渐变颜色
+    for(let i=0; i < points.length-1; i++){
+        const p1 = points[i];
+        const p2 = points[i+1];
+        const ratio = i / points.length;
+        const r = Math.floor(255 * Math.sin(ratio * Math.PI));
+        const g = Math.floor(255 * Math.cos(ratio * Math.PI));
+        const b = Math.floor(255 * Math.abs(Math.sin(ratio*2)));
+        ctx.strokeStyle = `rgb(${r},${g},${b})`;
+        ctx.beginPath();
+        ctx.moveTo(p1.x,p1.y);
+        ctx.lineTo(p2.x,p2.y);
+        ctx.stroke();
+    }
+    angle_offset += 0.02;
+    requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>
