@@ -12,25 +12,38 @@
 }
 body{
     min-height:100vh;
-    background:#080812;
+    background:#c6e2f7;
     font-family:system-ui;
     display:flex;
     justify-content:center;
     align-items:center;
+    overflow:hidden;
+}
+#snowCanvas{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index:0;
+    pointer-events:none;
 }
 .box{
     text-align:center;
+    position:relative;
+    z-index:1;
 }
 h1{
-    color:#ffffff;
+    color:#1a3454;
     margin-bottom:40px;
     font-weight:500;
+    font-size:36px;
 }
 a{
     display:block;
     text-decoration:none;
-    color:#fff;
-    background:#1b1b33;
+    color:#ffffff;
+    background:#6298cb;
     margin:16px auto;
     width:280px;
     padding:16px;
@@ -39,17 +52,119 @@ a{
     transition: 0.25s;
 }
 a:hover{
-    background:#303060;
+    background:#437fb8;
     transform:scale(1.04);
 }
 </style>
 </head>
 <body>
+<canvas id="snowCanvas"></canvas>
 <div class="box">
     <h1>✨动画特效小站</h1>
     <a href="butterfly.html">🦋 动态蝴蝶</a>
     <a href="heart.html">❤️ 爱心数字雨</a>
     <a href="firework.html">🎆 烟花绽放</a>
 </div>
+
+<script>
+const canvas = document.getElementById('snowCanvas');
+const ctx = canvas.getContext('2d');
+let w = canvas.width = window.innerWidth;
+let h = canvas.height = window.innerHeight;
+
+const cols = Math.ceil(w / 3);
+const snowHeight = new Array(cols).fill(0);
+const maxSnow = Math.min(120, h * 0.18);
+
+class Snow {
+    constructor() {
+        this.reset();
+    }
+    reset() {
+        this.x = Math.random() * w;
+        this.y = Math.random() * -h;
+        this.r = Math.random() * 1.6 + 0.8;
+        this.speedY = Math.random() * 0.8 + 0.4;
+        this.speedX = Math.random() * 0.3 - 0.15;
+        this.alpha = Math.random() * 0.4 + 0.5;
+    }
+    update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        const col = Math.max(0, Math.min(cols - 1, Math.floor(this.x / 3)));
+        if (this.y >= h - snowHeight[col] - this.r) {
+            snowHeight[col] = Math.min(maxSnow, snowHeight[col] + 0.04);
+            this.y = h - snowHeight[col] - this.r;
+            this.draw();
+            return false;
+        }
+        if (this.y > h || this.x < -5 || this.x > w + 5) {
+            this.reset();
+        }
+        return true;
+    }
+    draw() {
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+}
+
+let snowList = [];
+for (let i = 0; i < 180; i++) {
+    snowList.push(new Snow());
+}
+
+function drawSnowGround() {
+    ctx.save();
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.moveTo(0, h);
+    for (let i = 0; i < cols; i++) {
+        const x = i * 3;
+        const y = h - snowHeight[i];
+        if (i === 0) {
+            ctx.lineTo(x, y);
+        } else {
+            const prevX = (i - 1) * 3;
+            const prevY = h - snowHeight[i - 1];
+            const midX = (prevX + x) / 2;
+            ctx.quadraticCurveTo(prevX, prevY, midX, (prevY + y) / 2);
+        }
+    }
+    ctx.lineTo(w, h);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+}
+
+function animate() {
+    ctx.clearRect(0, 0, w, h);
+    drawSnowGround();
+    for (let s of snowList) {
+        const alive = s.update();
+        if (alive) s.draw();
+    }
+    requestAnimationFrame(animate);
+}
+animate();
+
+window.addEventListener('resize', () => {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+    const newCols = Math.ceil(w / 3);
+    const newSnowHeight = new Array(newCols).fill(0);
+    for (let i = 0; i < newCols; i++) {
+        const oldIndex = Math.floor((i / newCols) * snowHeight.length);
+        newSnowHeight[i] = snowHeight[oldIndex] || 0;
+    }
+    snowHeight.length = 0;
+    snowHeight.push(...newSnowHeight);
+});
+</script>
 </body>
 </html>
