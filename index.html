@@ -3,168 +3,968 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>我的动画小站</title>
+<title>落花有意 · 动画特效小站</title>
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing: border-box;
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 25% 8%, rgba(255, 235, 245, 0.9) 0%, transparent 50%),
+        radial-gradient(circle at 78% 12%, rgba(255, 220, 235, 0.7) 0%, transparent 45%),
+        radial-gradient(circle at 50% 100%, rgba(180, 200, 235, 0.6) 0%, transparent 60%),
+        linear-gradient(180deg,
+            #fce8f2 0%,
+            #f5dcee 25%,
+            #e8d8f0 45%,
+            #d8d8ee 65%,
+            #c4cce8 82%,
+            #b4c4e4 100%);
+    font-family: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    line-height: 1.5;
 }
-body{
-    min-height:100vh;
-    background:#c6e2f7;
-    font-family:system-ui;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    overflow:hidden;
+
+#sceneCanvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
 }
-#snowCanvas{
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    z-index:0;
-    pointer-events:none;
+
+#treeHit {
+    position: fixed;
+    z-index: 1;
+    cursor: pointer;
 }
-.box{
-    text-align:center;
-    position:relative;
-    z-index:1;
+
+.stage {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 520px;
+    padding: 0 24px;
+    text-align: center;
+    pointer-events: none;
 }
-h1{
-    color:#1a3454;
-    margin-bottom:40px;
-    font-weight:500;
-    font-size:36px;
+
+.branch { pointer-events: auto; }
+
+h1 {
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #8a4a6a 0%, #c06a9a 50%, #8a4a6a 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: titleShine 5s linear infinite;
+    text-shadow: 0 2px 16px rgba(255, 255, 255, 0.7);
 }
-a{
-    display:block;
-    text-decoration:none;
-    color:#ffffff;
-    background:#6298cb;
-    margin:16px auto;
-    width:280px;
-    padding:16px;
-    border-radius:12px;
-    font-size:17px;
-    transition: 0.25s;
+
+@keyframes titleShine { to { background-position: 200% center; } }
+
+h1 .star {
+    display: inline-block;
+    font-size: 22px;
+    margin-right: 6px;
+    -webkit-text-fill-color: initial;
+    color: initial;
+    animation: starPulse 2.6s ease-in-out infinite;
 }
-a:hover{
-    background:#437fb8;
-    transform:scale(1.04);
+
+@keyframes starPulse {
+    0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    50% { transform: scale(1.12) rotate(8deg); opacity: 0.85; }
+}
+
+.subtitle {
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: rgba(120, 80, 110, 0.55);
+    margin-bottom: 30px;
+    animation: fadeIn 1s ease 0.2s both;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============ 祈福牌区 ============ */
+.branch {
+    position: relative;
+    width: 100%;
+    height: 420px;
+    animation: fadeIn 0.8s ease 0.4s both;
+}
+
+.leaf {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: #6a3a4a;
+
+    padding: 12px 16px 12px 12px;
+    border-radius: 8px 8px 12px 12px;
+
+    background:
+        linear-gradient(180deg,
+            rgba(255, 255, 255, 0.35) 0%,
+            transparent 30%),
+        linear-gradient(135deg, #ffd9e6 0%, #ffb8d0 55%, #ff9cc0 100%);
+
+    box-shadow:
+        0 6px 18px rgba(200, 120, 160, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+        inset 0 -2px 6px rgba(200, 100, 150, 0.2);
+
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    width: 210px;
+
+    transform-origin: top center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.leaf::before {
+    content: "";
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    width: 2px;
+    height: 22px;
+    background: linear-gradient(180deg,
+        rgba(150, 100, 80, 0.6) 0%,
+        rgba(180, 130, 100, 0.8) 100%);
+    transform: translateX(-50%);
+    border-radius: 1px;
+}
+
+.leaf::after {
+    content: "";
+    position: absolute;
+    top: -28px;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    border: 2px solid rgba(150, 100, 80, 0.7);
+    border-radius: 50%;
+    transform: translateX(-50%);
+}
+
+.leaf:nth-of-type(1) { animation: swing 4.8s ease-in-out infinite; }
+.leaf:nth-of-type(2) { animation: swing 5.4s ease-in-out infinite 0.7s; }
+.leaf:nth-of-type(3) { animation: swing 5.0s ease-in-out infinite 1.3s; }
+
+@keyframes swing {
+    0%, 100% { transform: rotate(-0.8deg); }
+    50% { transform: rotate(0.8deg); }
+}
+
+.leaf .ico {
+    flex: 0 0 auto;
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 19px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.6);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 2px 6px rgba(200, 100, 150, 0.2);
+}
+
+.leaf .txt { flex: 1; text-align: left; }
+
+.leaf .arrow {
+    flex: 0 0 auto;
+    font-size: 14px;
+    opacity: 0.55;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+@media (hover: hover) {
+    .leaf:hover {
+        transform: rotate(0deg) scale(1.05);
+        box-shadow:
+            0 10px 26px rgba(200, 120, 160, 0.5),
+            inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    }
+    .leaf:hover .arrow { transform: translateX(4px); opacity: 1; }
+    .leaf:hover .ico { background: rgba(255, 255, 255, 0.85); }
+}
+
+.leaf:active { transform: scale(0.97); }
+
+.foot {
+    margin-top: 26px;
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: rgba(120, 80, 110, 0.45);
+    animation: fadeIn 1s ease 0.8s both;
+}
+
+@media (max-width: 480px) {
+    h1 { font-size: 24px; letter-spacing: 2px; }
+    .subtitle { font-size: 12px; letter-spacing: 3px; margin-bottom: 24px; }
+    .branch { height: 380px; }
+    .leaf { width: 170px; padding: 10px 12px 10px 10px; font-size: 14px; }
+    .leaf .ico { width: 32px; height: 32px; font-size: 17px; }
 }
 </style>
 </head>
 <body>
-<canvas id="snowCanvas"></canvas>
-<div class="box">
-    <h1>✨动画特效小站</h1>
-    <a href="butterfly.html">🦋 动态蝴蝶</a>
-    <a href="heart.html">❤️ 爱心数字雨</a>
-    <a href="firework.html">🎆 烟花绽放</a>
+<canvas id="sceneCanvas"></canvas>
+<div id="treeHit" title="点我，摇落花瓣"></div>
+
+<div class="stage">
+    <h1><span class="star">🌸</span>动画特效小站</h1>
+    <p class="subtitle">落花有意 · 随流水</p>
+
+    <nav class="branch">
+        <a class="leaf" href="butterfly.html">
+            <span class="ico">🦋</span>
+            <span class="txt">动态蝴蝶</span>
+            <span class="arrow">›</span>
+        </a>
+        <a class="leaf" href="heart.html">
+            <span class="ico">❤️</span>
+            <span class="txt">爱心数字雨</span>
+            <span class="arrow">›</span>
+        </a>
+        <a class="leaf" href="firework.html">
+            <span class="ico">🎆</span>
+            <span class="txt">烟花绽放</span>
+            <span class="arrow">›</span>
+        </a>
+    </nav>
+
+    <p class="foot">— 点击花瓣，进入特效 —</p>
 </div>
 
 <script>
-const canvas = document.getElementById('snowCanvas');
-const ctx = canvas.getContext('2d');
-let w = canvas.width = window.innerWidth;
-let h = canvas.height = window.innerHeight;
+(function () {
+    const canvas = document.getElementById('sceneCanvas');
+    const ctx = canvas.getContext('2d');
+    const treeHit = document.getElementById('treeHit');
 
-const cols = Math.ceil(w / 3);
-const snowHeight = new Array(cols).fill(0);
-const maxSnow = Math.min(120, h * 0.18);
+    let w = 0, h = 0;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-class Snow {
-    constructor() {
-        this.reset();
-    }
-    reset() {
-        this.x = Math.random() * w;
-        this.y = Math.random() * -h;
-        this.r = Math.random() * 1.6 + 0.8;
-        this.speedY = Math.random() * 0.8 + 0.4;
-        this.speedX = Math.random() * 0.3 - 0.15;
-        this.alpha = Math.random() * 0.4 + 0.5;
-    }
-    update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        const col = Math.max(0, Math.min(cols - 1, Math.floor(this.x / 3)));
-        if (this.y >= h - snowHeight[col] - this.r) {
-            snowHeight[col] = Math.min(maxSnow, snowHeight[col] + 0.04);
-            this.y = h - snowHeight[col] - this.r;
-            this.draw();
-            return false;
+    let waterLineY = 0;
+    const WATER_RATIO = 0.20;
+
+    let treeX = 0;
+    let treeBaseY = 0;
+    let crownX = 0, crownY = 0, crownW = 0, crownH = 0;
+
+    let petals = [];
+    let ripples = [];
+    let cat = null;
+    let crownBlobs = [];
+    let treeShake = 0;
+
+    const PETAL_COLORS = [
+        ['#ffd6e4', '#ffb0cc'],
+        ['#ffc8dd', '#ff9fc0'],
+        ['#ffe0ec', '#ffc0d8'],
+        ['#ffb8d4', '#ff8fb8'],
+        ['#ffdce8', '#ffb4cf'],
+    ];
+
+    /* ================= 花瓣 ================= */
+    class Petal {
+        constructor(initial, burst) { this.reset(initial, burst); }
+
+        reset(initial, burst) {
+            this.x = Math.random() * w;
+            if (burst) {
+                const angle = Math.random() * Math.PI * 2;
+                const radius = Math.random() * crownW * 0.5;
+                this.x = crownX + Math.cos(angle) * radius;
+                this.y = crownY + Math.sin(angle) * radius * 0.6;
+                this.vy = Math.random() * 1.6 + 0.8;
+                this.vx = (Math.random() - 0.5) * 1.4;
+            } else if (initial) {
+                this.y = Math.random() * h - h;
+                this.vy = Math.random() * 0.7 + 0.5;
+                this.vx = Math.random() * 0.5 - 0.25;
+            } else {
+                this.y = -30 - Math.random() * 80;
+                this.vy = Math.random() * 0.7 + 0.5;
+                this.vx = Math.random() * 0.5 - 0.25;
+            }
+
+            this.size = Math.random() * 8 + 7;
+            this.rot = Math.random() * Math.PI * 2;
+            this.vr = (Math.random() - 0.5) * 0.03;
+            this.swayAmp = Math.random() * 0.8 + 0.3;
+            this.swayPhase = Math.random() * Math.PI * 2;
+            this.swaySpeed = Math.random() * 0.02 + 0.01;
+            this.alpha = Math.random() * 0.35 + 0.6;
+
+            const c = PETAL_COLORS[Math.floor(Math.random() * PETAL_COLORS.length)];
+            this.colorInner = c[0];
+            this.colorOuter = c[1];
         }
-        if (this.y > h || this.x < -5 || this.x > w + 5) {
-            this.reset();
+
+        update() {
+            this.swayPhase += this.swaySpeed;
+            this.x += this.vx + Math.sin(this.swayPhase) * this.swayAmp * 0.3;
+            this.y += this.vy;
+            this.rot += this.vr;
+
+            if (this.y >= waterLineY - this.size * 0.3) {
+                ripples.push(new Ripple(this.x, waterLineY, false));
+                this.reset(false, false);
+                return false;
+            }
+            if (this.x < -30 || this.x > w + 30) this.reset(false, false);
+            return true;
         }
-        return true;
+
+        draw() {
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            ctx.rotate(this.rot);
+            ctx.globalAlpha = this.alpha;
+
+            const s = this.size;
+            const grad = ctx.createLinearGradient(-s, -s, s, s);
+            grad.addColorStop(0, this.colorInner);
+            grad.addColorStop(1, this.colorOuter);
+            ctx.fillStyle = grad;
+
+            ctx.beginPath();
+            ctx.moveTo(0, -s);
+            ctx.bezierCurveTo(s * 1.1, -s * 0.5, s * 0.9, s * 0.7, 0, s);
+            ctx.bezierCurveTo(-s * 0.9, s * 0.7, -s * 1.1, -s * 0.5, 0, -s);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.lineWidth = 0.6;
+            ctx.beginPath();
+            ctx.moveTo(0, -s * 0.75);
+            ctx.quadraticCurveTo(s * 0.15, 0, 0, s * 0.8);
+            ctx.stroke();
+
+            ctx.restore();
+        }
     }
-    draw() {
+
+    /* ================= 涟漪 ================= */
+    class Ripple {
+        constructor(x, y, big) {
+            this.x = x; this.y = y;
+            this.r = 2;
+            this.maxR = big ? 42 : Math.random() * 28 + 22;
+            this.alpha = 0.55;
+            this.life = 1;
+            this.lineWidth = big ? 1.8 : 1.2;
+        }
+        update() {
+            this.r += (this.maxR - this.r) * 0.06;
+            this.life -= 0.014;
+            this.alpha = Math.max(0, this.life * 0.55);
+            return this.life > 0;
+        }
+        draw() {
+            ctx.save();
+            ctx.globalAlpha = this.alpha;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.lineWidth = this.lineWidth;
+            ctx.beginPath();
+            ctx.ellipse(this.x, this.y, this.r, this.r * 0.32, 0, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.globalAlpha = this.alpha * 0.55;
+            ctx.lineWidth = this.lineWidth * 0.6;
+            ctx.beginPath();
+            ctx.ellipse(this.x, this.y, this.r * 0.55, this.r * 0.18, 0, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.restore();
+        }
+    }
+
+    /* ================= 粉色祈福树 ================= */
+    function buildTree() {
+        treeX = w * 0.5;
+        treeBaseY = waterLineY + 8;
+
+        crownX = w * 0.5;
+        crownY = Math.max(110, h * 0.20);
+        crownW = Math.min(w * 0.72, 620);
+        crownH = Math.min(h * 0.40, 360);
+
+        crownBlobs = [];
+        const count = 90;
+        for (let i = 0; i < count; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const radius = Math.pow(Math.random(), 0.55);
+            const bx = crownX + Math.cos(angle) * radius * crownW * 0.5;
+            const by = crownY + Math.sin(angle) * radius * crownH * 0.5;
+
+            const shade = Math.random();
+            let color;
+            if (shade < 0.35) color = '#ffc8dd';
+            else if (shade < 0.65) color = '#ffb0cc';
+            else if (shade < 0.85) color = '#ffd6e4';
+            else color = '#ff9fc0';
+
+            crownBlobs.push({
+                x: bx, y: by,
+                r: Math.random() * 22 + 18,
+                color: color,
+                alpha: Math.random() * 0.3 + 0.6,
+                phase: Math.random() * Math.PI * 2,
+                speed: Math.random() * 0.01 + 0.005,
+            });
+        }
+
+        updateTreeHit();
+        positionLeaves();
+    }
+
+    function updateTreeHit() {
+        const left = crownX - crownW * 0.5;
+        const top = crownY - crownH * 0.5;
+        treeHit.style.left = left + 'px';
+        treeHit.style.top = top + 'px';
+        treeHit.style.width = crownW + 'px';
+        treeHit.style.height = crownH + 'px';
+        treeHit.style.borderRadius = '50%';
+    }
+
+    /* 把三张木牌挂到树枝末端 */
+    function positionLeaves() {
+        const branchEl = document.querySelector('.branch');
+        if (!branchEl) return;
+        const leaves = branchEl.querySelectorAll('.leaf');
+        if (leaves.length < 3) return;
+
+        const rect = branchEl.getBoundingClientRect();
+        const leafW = leaves[0].offsetWidth || 210;
+
+        // 三根枝条末端（相对于视口）
+        const branchEnds = [
+            { x: treeX - crownW * 0.42, y: crownY - crownH * 0.12 + 10 },
+            { x: treeX + crownW * 0.42, y: crownY - crownH * 0.18 + 10 },
+            { x: treeX - crownW * 0.28, y: crownY + crownH * 0.10 + 30 },
+        ];
+
+        leaves.forEach(function (el, i) {
+            const p = branchEnds[i];
+            // 换算成相对 .branch 的位置，并减去宽度一半让牌子居中
+            const left = p.x - rect.left - leafW / 2;
+            const top = p.y - rect.top + 20; // 再往下 20px，让挂绳挂到枝头
+            el.style.left = Math.max(8, left) + 'px';
+            el.style.top = top + 'px';
+        });
+    }
+
+    function drawTree() {
         ctx.save();
-        ctx.globalAlpha = this.alpha;
-        ctx.fillStyle = "#ffffff";
+
+        let shakeX = 0, shakeY = 0;
+        if (treeShake > 0) {
+            shakeX = Math.sin(treeShake * 0.9) * treeShake * 8;
+            shakeY = Math.cos(treeShake * 1.3) * treeShake * 4;
+            treeShake *= 0.92;
+            if (treeShake < 0.01) treeShake = 0;
+        }
+
+        const trunkTopY = crownY + crownH * 0.15;
+        const trunkBottomY = treeBaseY;
+        const bottomHalfW = 14;
+        const topHalfW = 5;
+
+        // 树干
+        ctx.fillStyle = '#a8705a';
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        ctx.moveTo(treeX - bottomHalfW + shakeX, trunkBottomY);
+        ctx.quadraticCurveTo(
+            treeX - topHalfW * 1.5 + shakeX, (trunkBottomY + trunkTopY) / 2,
+            treeX - topHalfW + shakeX, trunkTopY
+        );
+        ctx.lineTo(treeX + topHalfW + shakeX, trunkTopY);
+        ctx.quadraticCurveTo(
+            treeX + topHalfW * 1.5 + shakeX, (trunkBottomY + trunkTopY) / 2,
+            treeX + bottomHalfW + shakeX, trunkBottomY
+        );
+        ctx.closePath();
         ctx.fill();
+
+        // 树干纹理
+        ctx.strokeStyle = 'rgba(120, 70, 50, 0.35)';
+        ctx.lineWidth = 1;
+        for (let i = -1; i <= 1; i++) {
+            const offset = i * 5;
+            ctx.beginPath();
+            ctx.moveTo(treeX + offset + shakeX, trunkBottomY - 10);
+            ctx.quadraticCurveTo(
+                treeX + offset * 0.6 + shakeX, (trunkBottomY + trunkTopY) / 2,
+                treeX + offset * 0.4 + shakeX, trunkTopY + 20
+            );
+            ctx.stroke();
+        }
+
+        // 主枝
+        const branchStartY = trunkTopY + 20;
+        const leftBranchEndX = treeX - crownW * 0.42;
+        const leftBranchEndY = crownY - crownH * 0.12;
+        const rightBranchEndX = treeX + crownW * 0.42;
+        const rightBranchEndY = crownY - crownH * 0.18;
+
+        ctx.strokeStyle = '#a8705a';
+        ctx.lineCap = 'round';
+
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+        ctx.moveTo(treeX + shakeX, branchStartY);
+        ctx.quadraticCurveTo(
+            treeX - crownW * 0.15 + shakeX, crownY + crownH * 0.05,
+            leftBranchEndX + shakeX, leftBranchEndY + shakeY
+        );
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(treeX + shakeX, branchStartY);
+        ctx.quadraticCurveTo(
+            treeX + crownW * 0.15 + shakeX, crownY + crownH * 0.02,
+            rightBranchEndX + shakeX, rightBranchEndY + shakeY
+        );
+        ctx.stroke();
+
+        // 次级枝条
+        ctx.lineWidth = 4;
+        for (let i = 0; i < 3; i++) {
+            const t = 0.4 + i * 0.2;
+            const px = treeX + (leftBranchEndX - treeX) * t + shakeX;
+            const py = branchStartY + (leftBranchEndY - branchStartY) * t + shakeY;
+            ctx.beginPath();
+            ctx.moveTo(px, py);
+            ctx.quadraticCurveTo(px - 30, py - 30, px - 55 - i * 8, py - 65 - i * 12);
+            ctx.stroke();
+        }
+        for (let i = 0; i < 3; i++) {
+            const t = 0.4 + i * 0.2;
+            const px = treeX + (rightBranchEndX - treeX) * t + shakeX;
+            const py = branchStartY + (rightBranchEndY - branchStartY) * t + shakeY;
+            ctx.beginPath();
+            ctx.moveTo(px, py);
+            ctx.quadraticCurveTo(px + 30, py - 30, px + 55 + i * 8, py - 65 - i * 12);
+            ctx.stroke();
+        }
+
+        // 树冠
+        for (const blob of crownBlobs) {
+            blob.phase += blob.speed;
+            const breathe = Math.sin(blob.phase) * 3;
+            ctx.globalAlpha = blob.alpha * 0.7;
+            ctx.fillStyle = blob.color;
+            ctx.beginPath();
+            ctx.arc(
+                blob.x + breathe + shakeX * 0.6,
+                blob.y + breathe * 0.5 + shakeY * 0.6,
+                blob.r, 0, Math.PI * 2
+            );
+            ctx.fill();
+        }
+
+        // 高光
+        for (const blob of crownBlobs) {
+            if (blob.r < 26) continue;
+            ctx.globalAlpha = blob.alpha * 0.4;
+            ctx.fillStyle = '#fff0f6';
+            ctx.beginPath();
+            ctx.arc(
+                blob.x - blob.r * 0.25 + shakeX * 0.6,
+                blob.y - blob.r * 0.25 + shakeY * 0.6,
+                blob.r * 0.35, 0, Math.PI * 2
+            );
+            ctx.fill();
+        }
+
+        ctx.globalAlpha = 1;
         ctx.restore();
     }
-}
 
-let snowList = [];
-for (let i = 0; i < 180; i++) {
-    snowList.push(new Snow());
-}
+    /* ================= 橘白猫（重画版） ================= */
+    class Cat {
+        constructor() {
+            this.x = treeX - 90;
+            this.y = waterLineY;
+            this.startX = this.x;
+            this.startY = this.y;
+            this.targetX = this.x;
+            this.targetY = this.y;
+            this.jumpProgress = 0;
+            this.jumpDuration = 60;
+            this.jumpHeight = 60;
+            this.jumping = false;
+            this.facing = 1;
+            this.idleTimer = 0;
+            this.idleInterval = 120;
+            this.bobPhase = 0;
+        }
 
-function drawSnowGround() {
-    ctx.save();
-    ctx.fillStyle = "#ffffff";
-    ctx.beginPath();
-    ctx.moveTo(0, h);
-    for (let i = 0; i < cols; i++) {
-        const x = i * 3;
-        const y = h - snowHeight[i];
-        if (i === 0) {
-            ctx.lineTo(x, y);
-        } else {
-            const prevX = (i - 1) * 3;
-            const prevY = h - snowHeight[i - 1];
-            const midX = (prevX + x) / 2;
-            ctx.quadraticCurveTo(prevX, prevY, midX, (prevY + y) / 2);
+        pickTarget() {
+            const range = 220;
+            const minX = Math.max(50, treeX - range);
+            const maxX = Math.min(w - 50, treeX + range);
+            return minX + Math.random() * (maxX - minX);
+        }
+
+        jumpTo(x) {
+            this.startX = this.x;
+            this.startY = this.y;
+            this.targetX = x;
+            this.targetY = waterLineY;
+            this.jumpProgress = 0;
+            this.jumpDuration = 55 + Math.random() * 25;
+            this.jumpHeight = 45 + Math.random() * 35;
+            this.jumping = true;
+            this.facing = x > this.x ? 1 : -1;
+        }
+
+        update() {
+            this.bobPhase += 0.06;
+            if (this.jumping) {
+                this.jumpProgress++;
+                const t = this.jumpProgress / this.jumpDuration;
+                if (t >= 1) {
+                    this.jumping = false;
+                    this.x = this.targetX;
+                    this.y = this.targetY;
+                    ripples.push(new Ripple(this.x, waterLineY, true));
+                    this.idleTimer = 0;
+                    this.idleInterval = 100 + Math.random() * 120;
+                    return;
+                }
+                this.x = this.startX + (this.targetX - this.startX) * t;
+                this.y = this.startY - Math.sin(t * Math.PI) * this.jumpHeight;
+            } else {
+                this.y = waterLineY + Math.sin(this.bobPhase) * 1.5;
+                this.idleTimer++;
+                if (this.idleTimer > this.idleInterval) {
+                    this.jumpTo(this.pickTarget());
+                }
+            }
+        }
+
+        draw() {
+            const x = this.x;
+            const y = this.y;
+            const bob = !this.jumping ? Math.sin(this.bobPhase) * 1.2 : 0;
+
+            ctx.save();
+            ctx.translate(x, y + bob);
+            ctx.scale(this.facing, 1);
+
+            // 倒影
+            ctx.globalAlpha = 0.22;
+            ctx.fillStyle = '#6a8ab0';
+            ctx.beginPath();
+            ctx.ellipse(0, 6, 26, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+
+            // 尾巴
+            ctx.strokeStyle = '#e89a52';
+            ctx.lineWidth = 7;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(-18, -18);
+            ctx.quadraticCurveTo(-38, -26, -34, -46);
+            ctx.stroke();
+            ctx.strokeStyle = '#fff8f0';
+            ctx.lineWidth = 6;
+            ctx.beginPath();
+            ctx.moveTo(-35, -40);
+            ctx.quadraticCurveTo(-34, -46, -34, -46);
+            ctx.stroke();
+
+            // 身体
+            ctx.fillStyle = '#f0a458';
+            ctx.beginPath();
+            ctx.ellipse(-2, -16, 22, 16, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 白色胸腹
+            ctx.fillStyle = '#fff8f0';
+            ctx.beginPath();
+            ctx.ellipse(8, -12, 12, 13, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 后腿
+            ctx.fillStyle = '#e09648';
+            ctx.beginPath();
+            ctx.ellipse(-8, -4, 7, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 前腿
+            ctx.fillStyle = '#f0a458';
+            ctx.beginPath();
+            ctx.ellipse(12, -3, 6, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(3, -3, 6, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 白爪
+            ctx.fillStyle = '#fff8f0';
+            ctx.beginPath();
+            ctx.arc(14, 0, 3.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(5, 0, 3.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 头
+            ctx.fillStyle = '#f0a458';
+            ctx.beginPath();
+            ctx.arc(14, -30, 15, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 白脸颊
+            ctx.fillStyle = '#fff8f0';
+            ctx.beginPath();
+            ctx.ellipse(18, -26, 10, 10, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 耳朵
+            ctx.fillStyle = '#f0a458';
+            ctx.beginPath();
+            ctx.moveTo(3, -40); ctx.lineTo(0, -52); ctx.lineTo(13, -42);
+            ctx.closePath(); ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(20, -42); ctx.lineTo(25, -53); ctx.lineTo(28, -40);
+            ctx.closePath(); ctx.fill();
+
+            // 内耳
+            ctx.fillStyle = '#ffb8c0';
+            ctx.beginPath();
+            ctx.moveTo(5, -41); ctx.lineTo(3, -48); ctx.lineTo(11, -42);
+            ctx.closePath(); ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(21, -42); ctx.lineTo(24, -49); ctx.lineTo(26, -41);
+            ctx.closePath(); ctx.fill();
+
+            // 眼睛
+            ctx.fillStyle = '#2a1f18';
+            ctx.beginPath();
+            ctx.ellipse(11, -31, 2.2, 2.6, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(21, -31, 2.2, 2.6, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(11.6, -31.8, 0.8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(21.6, -31.8, 0.8, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 鼻子
+            ctx.fillStyle = '#e87a8a';
+            ctx.beginPath();
+            ctx.moveTo(16, -26); ctx.lineTo(14, -27.5); ctx.lineTo(18, -27.5);
+            ctx.closePath(); ctx.fill();
+
+            // 嘴
+            ctx.strokeStyle = 'rgba(80, 50, 40, 0.7)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(16, -26);
+            ctx.quadraticCurveTo(14, -24, 12, -25);
+            ctx.moveTo(16, -26);
+            ctx.quadraticCurveTo(18, -24, 20, -25);
+            ctx.stroke();
+
+            // 胡须
+            ctx.strokeStyle = 'rgba(90, 70, 60, 0.45)';
+            ctx.lineWidth = 0.8;
+            ctx.beginPath();
+            ctx.moveTo(11, -26); ctx.lineTo(-2, -28);
+            ctx.moveTo(11, -24); ctx.lineTo(-2, -23);
+            ctx.moveTo(22, -26); ctx.lineTo(36, -28);
+            ctx.moveTo(22, -24); ctx.lineTo(36, -23);
+            ctx.stroke();
+
+            // 额头花纹
+            ctx.strokeStyle = 'rgba(200, 110, 50, 0.45)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(14, -42); ctx.lineTo(14, -37);
+            ctx.moveTo(10, -42); ctx.lineTo(11, -38);
+            ctx.moveTo(18, -42); ctx.lineTo(17, -38);
+            ctx.stroke();
+
+            ctx.restore();
         }
     }
-    ctx.lineTo(w, h);
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
-}
 
-function animate() {
-    ctx.clearRect(0, 0, w, h);
-    drawSnowGround();
-    for (let s of snowList) {
-        const alive = s.update();
-        if (alive) s.draw();
-    }
-    requestAnimationFrame(animate);
-}
-animate();
+    /* ================= 水面 ================= */
+    let waterPhase = 0;
 
-window.addEventListener('resize', () => {
-    w = canvas.width = window.innerWidth;
-    h = canvas.height = window.innerHeight;
-    const newCols = Math.ceil(w / 3);
-    const newSnowHeight = new Array(newCols).fill(0);
-    for (let i = 0; i < newCols; i++) {
-        const oldIndex = Math.floor((i / newCols) * snowHeight.length);
-        newSnowHeight[i] = snowHeight[oldIndex] || 0;
+    function drawWater() {
+        waterPhase += 0.012;
+
+        const grad = ctx.createLinearGradient(0, waterLineY - 10, 0, h);
+        grad.addColorStop(0, 'rgba(200, 215, 240, 0.5)');
+        grad.addColorStop(0.5, 'rgba(170, 195, 230, 0.7)');
+        grad.addColorStop(1, 'rgba(140, 175, 220, 0.85)');
+
+        ctx.beginPath();
+        ctx.moveTo(0, h);
+        ctx.lineTo(0, waterLineY);
+
+        const step = 12;
+        for (let x = 0; x <= w; x += step) {
+            const y = waterLineY
+                + Math.sin(x * 0.014 + waterPhase) * 3.5
+                + Math.sin(x * 0.03 + waterPhase * 1.6) * 1.8;
+            ctx.lineTo(x, y);
+        }
+        ctx.lineTo(w, h);
+        ctx.closePath();
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        // 高光线
+        ctx.beginPath();
+        for (let x = 0; x <= w; x += step) {
+            const y = waterLineY
+                + Math.sin(x * 0.014 + waterPhase) * 3.5
+                + Math.sin(x * 0.03 + waterPhase * 1.6) * 1.8;
+            if (x === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.65)';
+        ctx.lineWidth = 1.4;
+        ctx.stroke();
+
+        // 反光条纹
+        ctx.save();
+        for (let i = 0; i < 6; i++) {
+            const yy = waterLineY + 12 + i * 16;
+            if (yy > h) break;
+            const offset = Math.sin(waterPhase * 1.4 + i) * 20;
+            ctx.globalAlpha = 0.06 + (i % 2) * 0.03;
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.ellipse(w * 0.5 + offset, yy, w * 0.32, 2, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.restore();
     }
-    snowHeight.length = 0;
-    snowHeight.push(...newSnowHeight);
-});
+
+    /* ================= 尺寸与初始化 ================= */
+    function resize() {
+        w = window.innerWidth;
+        h = window.innerHeight;
+
+        canvas.width = Math.floor(w * dpr);
+        canvas.height = Math.floor(h * dpr);
+        canvas.style.width = w + 'px';
+        canvas.style.height = h + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        waterLineY = h - h * WATER_RATIO;
+
+        buildTree();
+
+        const targetCount = Math.min(42, Math.max(12, Math.floor((w * h) / 22000)));
+        if (petals.length === 0) {
+            for (let i = 0; i < targetCount; i++) petals.push(new Petal(true, false));
+        } else {
+            while (petals.length < targetCount) petals.push(new Petal(true, false));
+            if (petals.length > targetCount) petals.length = targetCount;
+        }
+
+        if (!cat) cat = new Cat();
+        else {
+            cat.y = waterLineY;
+            cat.targetY = waterLineY;
+        }
+    }
+
+    /* ================= 主循环 ================= */
+    let rafId = null;
+
+    function animate() {
+        ctx.clearRect(0, 0, w, h);
+
+        drawWater();
+
+        for (let i = ripples.length - 1; i >= 0; i--) {
+            const r = ripples[i];
+            if (r.update()) r.draw();
+            else ripples.splice(i, 1);
+        }
+
+        drawTree();
+
+        if (cat) {
+            cat.update();
+            cat.draw();
+        }
+
+        for (let i = 0; i < petals.length; i++) {
+            const p = petals[i];
+            if (p.update()) p.draw();
+        }
+
+        rafId = requestAnimationFrame(animate);
+    }
+
+    function start() {
+        if (rafId === null) rafId = requestAnimationFrame(animate);
+    }
+    function stop() {
+        if (rafId !== null) {
+            cancelAnimationFrame(rafId);
+            rafId = null;
+        }
+    }
+
+    /* ================= 点击树冠抖落花瓣 ================= */
+    treeHit.addEventListener('click', function () {
+        treeShake = 1;
+        const burstCount = 40;
+        for (let i = 0; i < burstCount; i++) {
+            petals.push(new Petal(false, true));
+        }
+        if (petals.length > 160) {
+            petals.splice(0, petals.length - 160);
+        }
+    });
+
+    resize();
+    start();
+
+    let resizeTimer = null;
+    window.addEventListener('resize', function () {
+        if (resizeTimer) clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(resize, 120);
+    });
+
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden) stop();
+        else start();
+    });
+})();
 </script>
 </body>
 </html>
